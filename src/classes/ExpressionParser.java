@@ -54,8 +54,9 @@ public class ExpressionParser {
     }
 
     public static boolean isDate(String s) {
-        return true;
+        return patternMap.get(ElementDetection.CELL).matcher(s).matches();
     }
+
 
     public static Expression parse(String s) throws ExpressionFormatException {
         Matcher matcher;
@@ -94,13 +95,27 @@ public class ExpressionParser {
             matcher = patternMap.get(ElementDetection.MULTIPLE_OPERATION).matcher(s);
             if (!matcher.matches())
                 throw new ExpressionFormatException("Unknown operation");
-            String op = matcher.group(0);
 
+            Operations op = (matcher.group(0).equals("min")) ? Operations.MIN : Operations.MAX;
+            String[] paramArray = s.split("(" + CELL_REGEX + ")" + "|" + DATE_REGEX_STRING);
+            if (paramArray.length < 1)
+                throw new ExpressionFormatException("Invalid number of arguments in operation " + op.toString());
 
+            List<Date> datesList = new ArrayList<>();
+            List<String> cellList = new ArrayList<>();
 
-            expression = new MultipleExpression();
-            // Multiple operation detected
-            // Continue parsing parameter list
+            for (int i = 0; i < paramArray.length; i++) {
+                if (isDate(paramArray[i])) {
+                    try {
+                        datesList.add(sdf.parse(paramArray[i]));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    cellList.add(paramArray[i]);
+            }
+
+            expression = new MultipleExpression(datesList, cellList);
         }
 
         return expression;
