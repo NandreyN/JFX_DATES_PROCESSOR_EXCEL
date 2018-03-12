@@ -1,5 +1,6 @@
 package classes;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -43,18 +44,34 @@ public class CellManager {
             col.setCellValueFactory(v -> {
                 int colNumber = 0;
                 colNumber = Integer.parseInt(col.getId());
-
-                String dateAsString = "";
-                Date d = v.getValue().getContent(colNumber).getCellValue();
-                if (d != null) {
-                    dateAsString = ExpressionParser.sdf.format(d);
-                }
-                return new SimpleStringProperty(dateAsString);
+                return v.getValue().getContent(colNumber).getContentObservable();
             });
+            configureColumnCellsBehavior(col);
             ret.add(col);
         });
         ret.add(0, getIndexColumn());
         return ret;
+    }
+
+    private static void configureColumnCellsBehavior(TableColumn<TableRowModel, String> column) {
+        // edit event
+        // on edit display formula
+        // on commit display  value and errors
+        column.setOnEditStart(x -> {
+            CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
+            c.setObservableContent(CellContent.States.FORMULA);
+        });
+
+        column.setOnEditCommit(x -> {
+            CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
+            // pass new Date
+            c.setObservableContent(CellContent.States.VALUE);
+        });
+
+        column.setOnEditCancel(x -> {
+            CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
+            c.setObservableContent(CellContent.States.VALUE);
+        });
     }
 
     public static int toNumber(String name) {
