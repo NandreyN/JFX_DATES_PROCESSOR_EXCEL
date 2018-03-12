@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.stream.IntStream;
 
@@ -64,13 +65,26 @@ public class CellManager {
 
         column.setOnEditCommit(x -> {
             CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
-            // pass new Date
-            c.setObservableContent(CellContent.States.VALUE);
+            Date newDate = null;
+            try {
+                newDate = CommandHelper.processFormula(x.getNewValue());
+                c.setCellValue(newDate);
+            } catch (ExpressionParser.ExpressionFormatException e) {
+                e.printStackTrace();
+            } finally {
+                c.setObservableContent(CellContent.States.VALUE);
+            }
         });
 
         column.setOnEditCancel(x -> {
             CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
-            c.setObservableContent(CellContent.States.VALUE);
+            try {
+                c.setCellValue(ExpressionParser.sdf.parse(x.getOldValue()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } finally {
+                c.setObservableContent(CellContent.States.VALUE);
+            }
         });
     }
 
