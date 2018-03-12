@@ -4,10 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class TableCell extends javafx.scene.control.TableCell {
+public class CellContent extends javafx.scene.control.TableCell {
     private static final int ALPHABET_SIZE = 26;
     private int row, column;
-    private String columnAsString;
     private static final char[] alphabet = new char[ALPHABET_SIZE];
     private Date cellValue;
     private String formula;
@@ -19,10 +18,9 @@ public class TableCell extends javafx.scene.control.TableCell {
         }
     }
 
-    public TableCell(int row, int column) {
+    public CellContent(int row, int column) {
         this.row = row;
         this.column = column;
-        columnAsString = convertColumnToString(column);
         formula = "";
     }
 
@@ -34,20 +32,16 @@ public class TableCell extends javafx.scene.control.TableCell {
         recalculate();*/
     }
 
+    public String getFormula() {
+        return formula;
+    }
+
     public int getRow() {
         return row;
     }
 
     public int getColumn() {
         return column;
-    }
-
-    public String getColumnAsString() {
-        return columnAsString;
-    }
-
-    private static String convertColumnToString(int col) {
-        return "";
     }
 
     public void setCellValue(Date value) {

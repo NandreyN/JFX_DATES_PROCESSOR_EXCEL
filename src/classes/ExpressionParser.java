@@ -22,7 +22,7 @@ public class ExpressionParser {
     }
 
     private static final Map<ElementDetection, Pattern> patternMap;
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
     private static final String YEARS = "([0-9]{4})";
     private static final String SEP = "[.]";
