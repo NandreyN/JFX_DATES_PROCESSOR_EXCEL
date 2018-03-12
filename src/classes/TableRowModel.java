@@ -20,7 +20,7 @@ public class TableRowModel {
     }
 
     public CellContent getContent(int idx) {
-        return columns.get(idx + 1);
+        return columns.get(idx);
     }
 
     public int getRowNumber() {

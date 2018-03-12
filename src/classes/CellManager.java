@@ -41,13 +41,12 @@ public class CellManager {
             col.setSortable(false);
             col.setId(w.toString());
             col.setCellValueFactory(v -> {
-                int rowNumber = v.getValue().getRowNumber();
                 int colNumber = 0;
+                colNumber = Integer.parseInt(col.getId());
 
                 String dateAsString = "";
                 Date d = v.getValue().getContent(colNumber).getCellValue();
                 if (d != null) {
-                    colNumber = Integer.parseInt(col.getId());
                     dateAsString = ExpressionParser.sdf.format(d);
                 }
                 return new SimpleStringProperty(dateAsString);
