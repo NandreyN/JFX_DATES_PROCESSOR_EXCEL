@@ -44,25 +44,25 @@ public class CellManager {
         ObservableList<TableColumn<TableRowModel, String>> ret = FXCollections.observableArrayList();
         IntStream.range(0, width).boxed().forEach(w -> {
             TableColumn<TableRowModel, String> col = new TableColumn<>(toName(w + 1));
-            col.setSortable(false);
-            col.setId(w.toString());
-            col.setCellValueFactory(v -> {
-                int colNumber = 0;
-                colNumber = Integer.parseInt(col.getId());
-                return v.getValue().getContent(colNumber).getContentObservable();
-            });
-            col.setCellFactory(x -> new CellContent());
-            configureColumnCellsBehavior(col);
+            configureColumnCellsBehavior(col, w);
             ret.add(col);
         });
         ret.add(0, getIndexColumn());
         return ret;
     }
 
-    private void configureColumnCellsBehavior(TableColumn<TableRowModel, String> column) {
+    private void configureColumnCellsBehavior(TableColumn<TableRowModel, String> column, int w) {
         // edit event
         // on edit display formula
         // on commit display  value and errors
+        column.setSortable(false);
+        column.setId(Integer.toString(w));
+        column.setCellValueFactory(v -> {
+            int colNumber = 0;
+            colNumber = Integer.parseInt(column.getId());
+            return v.getValue().getContent(colNumber).getContentObservable();
+        });
+        column.setCellFactory(x -> new CellContent());
         column.setEditable(true);
         column.setSortable(false);
         column.setResizable(true);

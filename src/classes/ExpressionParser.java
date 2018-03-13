@@ -30,8 +30,8 @@ public class ExpressionParser {
     private static final String TILL_30 = "((0[1-9])|(1[0-9])|(2[0-9])|30)";
     private static final String TILL_31 = "((0[1-9])|(1[0-9])|(2[0-9])|3[01])";
     private static final String TILL_29 = "((0[1-9])|(1[0-9])|(2[0-9]))";
-    private static final String DATE_REGEX_STRING = "(((" + "((01)|(03)|(05)|(07)|(08)|(10)|(12))" + SEP + TILL_31 + ")" + OR + "(02" + SEP + TILL_29 + ")" + OR +
-            "(" + "((04)|(06)|(09)|(11))" + SEP + TILL_30 + "))" + SEP + YEARS + ")";
+    private static final String DATE_REGEX_STRING = "(((" + "(01|03|05|07|08|10|12)" + SEP + TILL_31 + ")" + OR + "(02" + SEP + TILL_29 + ")" + OR +
+            "(" + "(04|06|09|11)" + SEP + TILL_30 + "))" + SEP + YEARS + ")";
 
     private static final String CELL_REGEX = "([A-Z]+)(1([0-9]*))";
     private static final String NUMBER_REGEX = "(([-+]?)\\d+)";
@@ -76,9 +76,9 @@ public class ExpressionParser {
         boolean binaryDetected = matcher.matches();
 
         if (binaryDetected) {
-            String firstOperand = matcher.group(0);
-            String secondOperand = matcher.group(2);
-            String op = matcher.group(1);
+            String firstOperand = matcher.group(2);
+            String secondOperand = matcher.group(24);
+            String op = matcher.group(23);
             try {
                 matcher = patternMap.get(ElementDetection.DATE).matcher(firstOperand);
                 Date date;
