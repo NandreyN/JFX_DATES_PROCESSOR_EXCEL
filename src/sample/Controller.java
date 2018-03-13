@@ -4,9 +4,11 @@ import classes.CellManager;
 import classes.TableRowModel;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import javax.swing.*;
 import java.util.stream.IntStream;
 
 public class Controller {
@@ -18,7 +20,6 @@ public class Controller {
     private CellManager manager;
 
     public Controller() {
-        manager = new CellManager(HEIGHT, WIDTH);
     }
 
     @FXML
@@ -27,11 +28,17 @@ public class Controller {
     }
 
     private void configureTableData() {
+
+        manager = new CellManager(HEIGHT, WIDTH, tableView);
         ObservableList<TableColumn<TableRowModel, String>> columns = manager.getEmptyTableColumns();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getColumns().clear();
-        tableView.getColumns().addAll(columns);
 
-        IntStream.range(0, HEIGHT).boxed().forEach(i -> tableView.getItems().addAll(new TableRowModel(i, WIDTH)));
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
+
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tableView.setEditable(true);
+        IntStream.range(0, HEIGHT).boxed().forEach(i -> tableView.getItems().add(new TableRowModel(i, WIDTH)));
+        tableView.getColumns().addAll(columns);
     }
 }

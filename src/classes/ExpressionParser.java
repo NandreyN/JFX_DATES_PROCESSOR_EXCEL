@@ -14,15 +14,15 @@ public class ExpressionParser {
     }
 
     public enum Operations {
-        ADD, SUBTRACT, MIN, MAX
+        ADD, SUBTRACT, MIN, MAX, CONFER
     }
 
     public enum ElementDetection {
-        CELL, NUMBER, BINARY_OPERATION, FORMULA, DATE, MULTIPLE_OPERATION
+        CELL, NUMBER, BINARY_OPERATION, FORMULA, DATE, MULTIPLE_OPERATION, SINGLE_VALUE
     }
 
     private static final Map<ElementDetection, Pattern> patternMap;
-    public static final SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("MM.dd.yyyy");
 
     private static final String YEARS = "([0-9]{4})";
     private static final String SEP = "[.]";
@@ -40,6 +40,7 @@ public class ExpressionParser {
             "(^=(" + NUMBER_REGEX + ")[+-](" + DATE_REGEX_STRING + ")$)";
 
     private static final String MULTIPLE_OP_REGEX = "\\([(min)(max)]\\)\\((\\d+)\\)";
+    private static final String SINGLE_VALUE_REGEX = "^=" + DATE_REGEX_STRING + "$";
 
     // =v1OPv2
     // =min(,,,, ...)
@@ -51,6 +52,7 @@ public class ExpressionParser {
         patternMap.put(ElementDetection.MULTIPLE_OPERATION, Pattern.compile(MULTIPLE_OP_REGEX));
         patternMap.put(ElementDetection.CELL, Pattern.compile(CELL_REGEX));
         patternMap.put(ElementDetection.NUMBER, Pattern.compile(NUMBER_REGEX));
+        patternMap.put(ElementDetection.SINGLE_VALUE, Pattern.compile(SINGLE_VALUE_REGEX));
     }
 
     public static boolean isDate(String s) {
@@ -58,11 +60,19 @@ public class ExpressionParser {
     }
 
 
-    public static Expression parse(String s) throws ExpressionFormatException {
+    public static Expression parse(String s) throws ExpressionFormatException, ParseException {
+        if (s.equals(""))
+            return null;
+
         Matcher matcher;
         Expression expression = null;
-
+        s.replaceAll("\"", "");
         matcher = patternMap.get(ElementDetection.BINARY_OPERATION).matcher(s);
+        if (patternMap.get(ElementDetection.SINGLE_VALUE).matcher(s).matches()) {
+            String dateS = s.replaceAll("=", "");
+            return new UnaryExpression(sdf.parse(dateS));
+        }
+
         boolean binaryDetected = matcher.matches();
 
         if (binaryDetected) {

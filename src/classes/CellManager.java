@@ -6,8 +6,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -16,10 +18,12 @@ import java.util.stream.IntStream;
 public class CellManager {
     private int height, width;
     private ObservableList<TableRowModel> tableContentModel;
+    private TableView<TableRowModel> parentTable;
 
-    public CellManager(int h, int w) {
+    public CellManager(int h, int w, TableView<TableRowModel> parentTable) {
         this.height = h;
         this.width = w;
+        this.parentTable = parentTable;
         tableContentModel = FXCollections.observableArrayList();
         IntStream.range(0, h).boxed().forEach(i -> {
             tableContentModel.add(new TableRowModel(i, width));
@@ -47,6 +51,7 @@ public class CellManager {
                 colNumber = Integer.parseInt(col.getId());
                 return v.getValue().getContent(colNumber).getContentObservable();
             });
+            col.setCellFactory(x -> new CellContent());
             configureColumnCellsBehavior(col);
             ret.add(col);
         });
@@ -54,38 +59,13 @@ public class CellManager {
         return ret;
     }
 
-    private static void configureColumnCellsBehavior(TableColumn<TableRowModel, String> column) {
+    private void configureColumnCellsBehavior(TableColumn<TableRowModel, String> column) {
         // edit event
         // on edit display formula
         // on commit display  value and errors
-        column.setOnEditStart(x -> {
-            CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
-            c.setObservableContent(CellContent.States.FORMULA);
-        });
-
-        column.setOnEditCommit(x -> {
-            CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
-            Date newDate = null;
-            try {
-                newDate = CommandHelper.processFormula(x.getNewValue());
-                c.setCellValue(newDate);
-            } catch (ExpressionParser.ExpressionFormatException e) {
-                e.printStackTrace();
-            } finally {
-                c.setObservableContent(CellContent.States.VALUE);
-            }
-        });
-
-        column.setOnEditCancel(x -> {
-            CellContent c = x.getTableView().getItems().get(x.getTablePosition().getColumn()).getContent(x.getTablePosition().getColumn());
-            try {
-                c.setCellValue(ExpressionParser.sdf.parse(x.getOldValue()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            } finally {
-                c.setObservableContent(CellContent.States.VALUE);
-            }
-        });
+        column.setEditable(true);
+        column.setSortable(false);
+        column.setResizable(true);
     }
 
     public static int toNumber(String name) {

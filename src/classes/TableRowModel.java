@@ -15,7 +15,7 @@ public class TableRowModel {
         columns = FXCollections.observableArrayList();
 
         IntStream.range(0, width).boxed().forEach(x -> {
-            columns.add(new CellContent(rowNumber, x));
+            columns.add(new CellContent());
         });
     }
 
