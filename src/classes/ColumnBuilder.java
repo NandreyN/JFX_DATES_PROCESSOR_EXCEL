@@ -61,10 +61,9 @@ public class ColumnBuilder {
         column.setResizable(true);
 
         column.setOnEditStart(x -> {
-            int row = x.getRowValue().getRowNumber();
             int col = x.getTablePosition().getColumn();
-            // CellContent c = x.getTableView().getItems().get(col).getContent(row);
-            //c.setObservableContent(CellContent.States.FORMULA);
+            CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
+            c.setObservableContent(CellContent.States.FORMULA);
         });
 
         column.setOnEditCommit(x -> {
@@ -73,7 +72,6 @@ public class ColumnBuilder {
 
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
 
-            // pass new Date
             try {
                 Date newDate = CommandHelper.processFormula(x.getNewValue());
                 c.setCellValue(newDate);
@@ -87,9 +85,9 @@ public class ColumnBuilder {
         });
 
         column.setOnEditCancel(x -> {
-            int row = x.getRowValue().getRowNumber();
+
             int col = x.getTablePosition().getColumn();
-            CellContent c = x.getTableView().getItems().get(col).getContent(row);
+            CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
             c.setObservableContent(CellContent.States.VALUE);
         });
     }

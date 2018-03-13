@@ -41,7 +41,7 @@ public class ExpressionParser {
     private static final String BINARY_OP_REGEX = "(^=(" + DATE_REGEX_STRING + ")([+-])(" + NUMBER_REGEX + ")$)" + "|" +
             "(^=(" + NUMBER_REGEX + ")[+-](" + DATE_REGEX_STRING + ")$)";
 
-    private static final String MULTIPLE_OP_REGEX = "\\([(min)(max)]\\)\\((\\d+)\\)";
+    private static final String MULTIPLE_OP_REGEX = "^\\=(min|max)\\([,0-9.]+\\)$";
     private static final String SINGLE_VALUE_REGEX = "^=" + DATE_REGEX_STRING + "$";
 
     // =v1OPv2
@@ -58,7 +58,7 @@ public class ExpressionParser {
     }
 
     public static boolean isDate(String s) {
-        return patternMap.get(ElementDetection.CELL).matcher(s).matches();
+        return patternMap.get(ElementDetection.DATE).matcher(s).matches();
     }
 
     public static String replaceCellIdentificators(ObservableList<TableRowModel> model, String formula) throws ExpressionFormatException {
@@ -133,26 +133,30 @@ public class ExpressionParser {
             if (!matcher.matches())
                 throw new ExpressionFormatException("Unknown operation");
 
-            Operations op = (matcher.group(0).equals("min")) ? Operations.MIN : Operations.MAX;
-            String[] paramArray = s.split("(" + CELL_REGEX + ")" + "|" + DATE_REGEX_STRING);
-            if (paramArray.length < 1)
+            matcher = Pattern.compile("min").matcher(s);
+            Operations op = (matcher.find()) ? Operations.MIN : Operations.MAX;
+            List<String> paramArray = new ArrayList<>(10);
+            matcher = Pattern.compile(DATE_REGEX_STRING).matcher(s);
+            while (matcher.find())
+                paramArray.add(matcher.group());
+
+            if (paramArray.size() < 1)
                 throw new ExpressionFormatException("Invalid number of arguments in operation " + op.toString());
 
             List<Date> datesList = new ArrayList<>();
-            List<String> cellList = new ArrayList<>();
 
-            for (int i = 0; i < paramArray.length; i++) {
-                if (isDate(paramArray[i])) {
-                    try {
-                        datesList.add(sdf.parse(paramArray[i]));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    cellList.add(paramArray[i]);
+            for (int i = 0; i < paramArray.size(); i++) {
+
+                try {
+                    datesList.add(sdf.parse(paramArray.get(i)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
             }
 
-            expression = new MultipleExpression(datesList, cellList);
+            expression = new MultipleExpression(datesList);
+            expression.setOperation(op);
         }
 
         return expression;
