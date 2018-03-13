@@ -2,29 +2,22 @@ package classes;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
-import java.util.Calendar;
+import java.text.ParseException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
-public class CellContent extends javafx.scene.control.TableCell {
+public class CellContent extends javafx.scene.control.TableCell<TableRowModel, String> {
     private static final int ALPHABET_SIZE = 26;
     private static final char[] alphabet = new char[ALPHABET_SIZE];
     private Date cellValue;
-    private String formula;
+    private SimpleStringProperty formula;
     private SimpleStringProperty contentDisplayed;
 
-    private TextField textField;
-
-    public static enum States {
+    public enum States {
         FORMULA, VALUE
     }
 
@@ -36,8 +29,9 @@ public class CellContent extends javafx.scene.control.TableCell {
     }
 
     public CellContent() {
-        formula = "";
-        contentDisplayed = new SimpleStringProperty();
+        super.setEditable(true);
+        formula = new SimpleStringProperty("");
+        contentDisplayed = new SimpleStringProperty("");
         setObservableContent(States.FORMULA);
     }
 
@@ -48,77 +42,12 @@ public class CellContent extends javafx.scene.control.TableCell {
     public void setObservableContent(States state) {
         switch (state) {
             case FORMULA:
-                contentDisplayed.set(this.formula);
+                contentDisplayed.setValue(formula.getValue());
                 break;
             case VALUE:
-                contentDisplayed.set(getCellValueFormatted());
+                contentDisplayed.setValue(getCellValueFormatted());
                 break;
         }
-    }
-
-    @Override
-    public void startEdit() {
-        super.startEdit();
-        if (textField == null) {
-            createTextField();
-        }
-        setGraphic(textField);
-        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        Platform.runLater(() -> {
-            textField.requestFocus();
-            textField.selectAll();
-        });
-    }
-
-    @Override
-    public void cancelEdit() {
-        super.cancelEdit();
-        setText((String) getItem());
-        setContentDisplay(ContentDisplay.TEXT_ONLY);
-    }
-
-    @Override
-    public void updateItem(Object item, boolean empty) {
-        super.updateItem(item, empty);
-        //String formula = item.toString();
-        if (empty) {
-            setText(null);
-            setGraphic(null);
-        } else {
-            if (isEditing()) {
-                if (textField != null) {
-                    textField.setText(getContentObservable().getValue());
-                }
-                setGraphic(textField);
-                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            } else {
-                setFormula(item.toString());
-                try {
-                    Date newDate = CommandHelper.processFormula(formula);
-                    setCellValue(newDate);
-                    setObservableContent(States.VALUE);
-
-                } catch (ExpressionParser.ExpressionFormatException e) {
-                    e.printStackTrace();
-                }
-                setText(getContentObservable().getValue());
-                setContentDisplay(ContentDisplay.TEXT_ONLY);
-            }
-        }
-    }
-
-
-    private void createTextField() {
-        textField = new TextField(getCellValueFormatted());
-        //textField.textProperty().bind(getContentObservable());
-        textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-        textField.setOnKeyReleased(t -> {
-            if (t.getCode() == KeyCode.ENTER) {
-                commitEdit(textField.getText());
-            } else if (t.getCode() == KeyCode.ESCAPE) {
-                cancelEdit();
-            }
-        });
     }
 
     private String getCellValueFormatted() {
@@ -126,10 +55,10 @@ public class CellContent extends javafx.scene.control.TableCell {
     }
 
     public void setFormula(String formula) {
-        this.formula = formula;
+        this.formula.setValue(formula);
     }
 
-    public String getFormula() {
+    public ObservableValue<String> getFormula() {
         return formula;
     }
 

@@ -6,29 +6,22 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTableCell;
 
+import javax.swing.text.AbstractDocument;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.stream.IntStream;
 
-public class CellManager {
+public class ColumnBuilder {
     private int height, width;
-    private ObservableList<TableRowModel> tableContentModel;
-    private TableView<TableRowModel> parentTable;
+    private TableView<TableRowModel> table;
 
-    public CellManager(int h, int w, TableView<TableRowModel> parentTable) {
+    public ColumnBuilder(int h, int w, TableView<TableRowModel> table) {
         this.height = h;
         this.width = w;
-        this.parentTable = parentTable;
-        tableContentModel = FXCollections.observableArrayList();
-        IntStream.range(0, h).boxed().forEach(i -> {
-            tableContentModel.add(new TableRowModel(i, width));
-        });
-
+        this.table = table;
     }
 
     private TableColumn<TableRowModel, String> getIndexColumn() {
@@ -42,12 +35,12 @@ public class CellManager {
 
     public ObservableList<TableColumn<TableRowModel, String>> getEmptyTableColumns() {
         ObservableList<TableColumn<TableRowModel, String>> ret = FXCollections.observableArrayList();
-        IntStream.range(0, width).boxed().forEach(w -> {
+        for (int w = 0; w < width; w++) {
             TableColumn<TableRowModel, String> col = new TableColumn<>(toName(w + 1));
             configureColumnCellsBehavior(col, w);
             ret.add(col);
-        });
-        ret.add(0, getIndexColumn());
+        }
+        //ret.add(0, getIndexColumn());
         return ret;
     }
 
@@ -62,11 +55,45 @@ public class CellManager {
             colNumber = Integer.parseInt(column.getId());
             return v.getValue().getContent(colNumber).getContentObservable();
         });
-        column.setCellFactory(x -> new CellContent());
+        column.setCellFactory(TextFieldTableCell.forTableColumn());
         column.setEditable(true);
         column.setSortable(false);
         column.setResizable(true);
+
+        column.setOnEditStart(x -> {
+            int row = x.getRowValue().getRowNumber();
+            int col = x.getTablePosition().getColumn();
+            // CellContent c = x.getTableView().getItems().get(col).getContent(row);
+            //c.setObservableContent(CellContent.States.FORMULA);
+        });
+
+        column.setOnEditCommit(x -> {
+            int row = x.getRowValue().getRowNumber();
+            int col = Integer.parseInt(column.getId());
+
+            CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
+
+            // pass new Date
+            try {
+                Date newDate = CommandHelper.processFormula(x.getNewValue());
+                c.setCellValue(newDate);
+                c.setObservableContent(CellContent.States.VALUE);
+            } catch (ExpressionParser.ExpressionFormatException e) {
+                e.printStackTrace();
+                c.setObservableContent(CellContent.States.VALUE);
+            }
+            c.setFormula(x.getNewValue());
+            c.setObservableContent(CellContent.States.VALUE);
+        });
+
+        column.setOnEditCancel(x -> {
+            int row = x.getRowValue().getRowNumber();
+            int col = x.getTablePosition().getColumn();
+            CellContent c = x.getTableView().getItems().get(col).getContent(row);
+            c.setObservableContent(CellContent.States.VALUE);
+        });
     }
+
 
     public static int toNumber(String name) {
         int number = 0;

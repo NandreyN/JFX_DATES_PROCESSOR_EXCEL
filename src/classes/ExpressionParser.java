@@ -1,5 +1,7 @@
 package classes;
 
+import javafx.collections.ObservableList;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -33,7 +35,7 @@ public class ExpressionParser {
     private static final String DATE_REGEX_STRING = "(((" + "(01|03|05|07|08|10|12)" + SEP + TILL_31 + ")" + OR + "(02" + SEP + TILL_29 + ")" + OR +
             "(" + "(04|06|09|11)" + SEP + TILL_30 + "))" + SEP + YEARS + ")";
 
-    private static final String CELL_REGEX = "([A-Z]+)(1([0-9]*))";
+    private static final String CELL_REGEX = "([A-Z]+)([0-9]*)";
     private static final String NUMBER_REGEX = "(([-+]?)\\d+)";
 
     private static final String BINARY_OP_REGEX = "(^=(" + DATE_REGEX_STRING + ")([+-])(" + NUMBER_REGEX + ")$)" + "|" +
@@ -59,6 +61,31 @@ public class ExpressionParser {
         return patternMap.get(ElementDetection.CELL).matcher(s).matches();
     }
 
+    public static String replaceCellIdentificators(ObservableList<TableRowModel> model, String formula) throws ExpressionFormatException {
+        StringBuilder sb = new StringBuilder(formula);
+        Matcher matcher = patternMap.get(ElementDetection.CELL).matcher(formula);
+        while (matcher.find()) {
+            String id = matcher.group(); // B1
+
+            int i = 0;
+            for (; i < id.length(); i++) {
+                if (!Character.isAlphabetic(id.charAt(i)))
+                    break;
+            }
+
+            int col = ColumnBuilder.toNumber(id.substring(0, i)) - 1;
+            int row = Integer.parseInt(id.substring(i));
+
+            CellContent c = model.get(row).getContent(col);
+            if (c.getCellValue() == null)
+                throw new ExpressionFormatException("Empty referenced cell");
+
+            String pasteValue = ExpressionParser.sdf.format(c.getCellValue());
+            int idx = sb.indexOf(id);
+            sb.replace(idx, idx + id.length(), pasteValue);
+        }
+        return sb.toString();
+    }
 
     public static Expression parse(String s) throws ExpressionFormatException, ParseException {
         if (s.equals(""))

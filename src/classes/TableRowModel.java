@@ -13,10 +13,8 @@ public class TableRowModel {
     public TableRowModel(int rowNumber, int width) {
         this.rowNumber = rowNumber;
         columns = FXCollections.observableArrayList();
-
-        IntStream.range(0, width).boxed().forEach(x -> {
+        for (int i = 0; i < width; i++)
             columns.add(new CellContent());
-        });
     }
 
     public CellContent getContent(int idx) {
