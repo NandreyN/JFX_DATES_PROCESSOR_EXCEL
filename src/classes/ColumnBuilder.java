@@ -35,7 +35,6 @@ public class ColumnBuilder {
             configureColumnCellsBehavior(col, w);
             ret.add(col);
         }
-        //ret.add(0, getIndexColumn());
         return ret;
     }
 
