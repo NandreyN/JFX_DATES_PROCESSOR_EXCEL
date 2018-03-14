@@ -1,6 +1,7 @@
 package classes;
 
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,7 +62,8 @@ public class ExpressionParser {
         return patternMap.get(ElementDetection.DATE).matcher(s).matches();
     }
 
-    public static String replaceCellIdentificators(ObservableList<TableRowModel> model, String formula) throws ExpressionFormatException {
+    public static Pair<String, List<CellContent>> replaceCellIdentificators(ObservableList<TableRowModel> model, String formula) throws ExpressionFormatException {
+        List<CellContent> cellCollection = new ArrayList<>();
         StringBuilder sb = new StringBuilder(formula);
         Matcher matcher = patternMap.get(ElementDetection.CELL).matcher(formula);
         while (matcher.find()) {
@@ -77,6 +79,7 @@ public class ExpressionParser {
             int row = Integer.parseInt(id.substring(i));
 
             CellContent c = model.get(row).getContent(col);
+            cellCollection.add(c);
             if (c.getCellValue() == null)
                 throw new ExpressionFormatException("Empty referenced cell");
 
@@ -84,7 +87,7 @@ public class ExpressionParser {
             int idx = sb.indexOf(id);
             sb.replace(idx, idx + id.length(), pasteValue);
         }
-        return sb.toString();
+        return new Pair<>(sb.toString(), cellCollection);
     }
 
     public static Expression parse(String s) throws ExpressionFormatException, ParseException {

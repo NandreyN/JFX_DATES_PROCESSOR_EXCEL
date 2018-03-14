@@ -1,18 +1,13 @@
 package classes;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 
-import javax.swing.text.AbstractDocument;
-import java.text.ParseException;
 import java.util.Date;
-import java.util.stream.IntStream;
 
 public class ColumnBuilder {
     private int height, width;
@@ -73,7 +68,7 @@ public class ColumnBuilder {
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
 
             try {
-                Date newDate = CommandHelper.processFormula(x.getNewValue());
+                Date newDate = CommandHelper.processFormula(x.getNewValue(), c);
                 c.setCellValue(newDate);
                 c.setObservableContent(CellContent.States.VALUE);
             } catch (ExpressionParser.ExpressionFormatException e) {

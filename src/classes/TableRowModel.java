@@ -14,7 +14,7 @@ public class TableRowModel {
         this.rowNumber = rowNumber;
         columns = FXCollections.observableArrayList();
         for (int i = 0; i < width; i++)
-            columns.add(new CellContent());
+            columns.add(new CellContent(ColumnBuilder.toName(i + 1) + rowNumber));
     }
 
     public CellContent getContent(int idx) {

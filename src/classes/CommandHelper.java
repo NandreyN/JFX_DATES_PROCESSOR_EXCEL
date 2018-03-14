@@ -2,9 +2,12 @@ package classes;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
+import javafx.util.Pair;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CommandHelper {
     @FXML
@@ -14,11 +17,12 @@ public class CommandHelper {
         tableView = table;
     }
 
-    public static Date processFormula(String formula) throws ExpressionParser.ExpressionFormatException {
+    public static Date processFormula(String formula, CellContent c) throws ExpressionParser.ExpressionFormatException {
         if (tableView == null)
             throw new ExpressionParser.ExpressionFormatException("Table was not initialized");
 
-        formula = ExpressionParser.replaceCellIdentificators(tableView.getItems(), formula);
+        Pair<String, List<CellContent>> pair = ExpressionParser.replaceCellIdentificators(tableView.getItems(), formula);
+        formula = pair.getKey();
         Expression expression = null;
         try {
             expression = ExpressionParser.parse(formula);
@@ -27,6 +31,11 @@ public class CommandHelper {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return (expression != null) ? expression.execute() : null;
+
+        if (expression != null) {
+            pair.getValue().forEach(x -> x.subscribe(c));
+            return expression.execute();
+        } else
+            return null;
     }
 }
