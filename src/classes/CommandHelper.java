@@ -55,12 +55,16 @@ public class CommandHelper {
     private static void registerDependencies(CellContent forCell, List<CellContent> dep) {
         // x->y means y uses x in it`s formula
         dep.forEach(x -> {
-            graph.addEdge(x.toString(), forCell.toString());
+            if (!graph.containsEdge(x.toString(), forCell.toString()))
+                graph.addEdge(x.toString(), forCell.toString());
         });
     }
 
     private static void unregisterDependencies(CellContent forCell, List<CellContent> dep) {
-        dep.forEach(x -> graph.removeEdge(x.toString(), forCell.toString()));
+        dep.forEach(x -> {
+            if (graph.containsEdge(x.toString(), forCell.toString()))
+                graph.removeEdge(x.toString(), forCell.toString());
+        });
     }
 
     private static boolean checkCycles() {
