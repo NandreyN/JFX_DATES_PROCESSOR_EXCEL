@@ -24,4 +24,8 @@ public class TableRowModel {
     public int getRowNumber() {
         return rowNumber;
     }
+
+    public int getCellCount() {
+        return columns.size();
+    }
 }
