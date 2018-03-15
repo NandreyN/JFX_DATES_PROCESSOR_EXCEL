@@ -1,6 +1,7 @@
 package classes;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.util.Pair;
 import jdk.jshell.spi.ExecutionControl;
@@ -103,7 +104,7 @@ public class CommandHelper {
         } catch (ExpressionParser.ExpressionFormatException e) {
             throw e;
         } catch (ParseException e) {
-            e.printStackTrace();
+            AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
         }
 
         if (expression != null) {

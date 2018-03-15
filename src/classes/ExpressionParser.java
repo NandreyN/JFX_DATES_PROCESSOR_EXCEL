@@ -1,6 +1,7 @@
 package classes;
 
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.util.Pair;
 
 import java.text.ParseException;
@@ -105,7 +106,7 @@ public class ExpressionParser {
     public static Expression parse(String s) throws ExpressionFormatException, ParseException {
         if (s.equals(""))
             return null;
-
+        s = s.replaceAll("\\s+", "");
         Matcher matcher;
         Expression expression = null;
         s.replaceAll("\"", "");
@@ -141,7 +142,7 @@ public class ExpressionParser {
                 }
                 expression = new BinaryExpression(date, days, (op.equals("+")) ? Operations.ADD : Operations.SUBTRACT);
             } catch (ParseException e) {
-                e.printStackTrace();
+               throw e;
             }
         } else {
             matcher = patternMap.get(ElementDetection.MULTIPLE_OPERATION).matcher(s);
@@ -161,11 +162,10 @@ public class ExpressionParser {
             List<Date> datesList = new ArrayList<>();
 
             for (int i = 0; i < paramArray.size(); i++) {
-
                 try {
                     datesList.add(sdf.parse(paramArray.get(i)));
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    throw e;
                 }
 
             }

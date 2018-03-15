@@ -3,6 +3,7 @@ package classes;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -100,7 +101,7 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         try {
             cellValue = CommandHelper.updateValueOfCell(this);
         } catch (ExpressionParser.ExpressionFormatException e) {
-            e.printStackTrace();
+            AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
         } finally {
             setObservableContent(States.VALUE);
         }

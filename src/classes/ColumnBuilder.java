@@ -3,6 +3,7 @@ package classes;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -78,10 +79,10 @@ public class ColumnBuilder {
                 CommandHelper.refreshDependentCells(c, newPair.getValue());
 
             } catch (ExpressionParser.ExpressionFormatException e) {
-                e.printStackTrace();
+                AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setObservableContent(CellContent.States.VALUE);
             } catch (CommandHelper.CycleReferenceException e) {
-                e.printStackTrace();
+                AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setFormula(x.getOldValue());
                 c.setObservableContent(CellContent.States.FORMULA);
             }
