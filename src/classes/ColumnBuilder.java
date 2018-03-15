@@ -6,8 +6,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Pair;
 
 import java.util.Date;
+import java.util.List;
 
 public class ColumnBuilder {
     private int height, width;
@@ -67,12 +69,21 @@ public class ColumnBuilder {
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
 
             try {
-                Date newDate = CommandHelper.processFormula(x.getNewValue(), c);
-                c.setCellValue(newDate);
+                Pair<Date, List<CellContent>> newPair = CommandHelper.processFormula(x.getNewValue(), c);
+                if (newPair == null) {
+                    throw new ExpressionParser.ExpressionFormatException("Got empty date");
+                }
+                c.setCellValue(newPair.getKey());
                 c.setObservableContent(CellContent.States.VALUE);
+                CommandHelper.refreshDependentCells(c, newPair.getValue());
+
             } catch (ExpressionParser.ExpressionFormatException e) {
                 e.printStackTrace();
                 c.setObservableContent(CellContent.States.VALUE);
+            } catch (CommandHelper.CycleReferenceException e) {
+                e.printStackTrace();
+                c.setFormula(x.getOldValue());
+                c.setObservableContent(CellContent.States.FORMULA);
             }
             c.setFormula(x.getNewValue());
             c.setObservableContent(CellContent.States.VALUE);

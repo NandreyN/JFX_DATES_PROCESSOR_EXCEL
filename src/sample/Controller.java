@@ -2,6 +2,7 @@ package sample;
 
 import classes.ColumnBuilder;
 import classes.CommandHelper;
+import classes.ExpressionParser;
 import classes.TableRowModel;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -48,9 +49,13 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        CommandHelper.setTableView(tableView);
         configureRowIdTableView();
         configureTableData();
+        try {
+            CommandHelper.setTableView(tableView);
+        } catch (ExpressionParser.ExpressionFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     private void configureRowIdTableView() {

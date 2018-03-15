@@ -72,7 +72,20 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof CellContent && (o == this || ((CellContent) o).id.equals(id));
+        if (!(o instanceof CellContent))
+            return false;
+        if (o == this)
+            return true;
+        return ((CellContent) o).getCellId().equals(getCellId());
+    }
+
+    @Override
+    public String toString() {
+        return getCellId();
+    }
+
+    public String getCellId() {
+        return id;
     }
 
     public void setCellValue(Date value) {
@@ -83,12 +96,13 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         return cellValue;
     }
 
-    private void recalculate() {
+    public void update() {
         try {
-            cellValue = CommandHelper.processFormula(getFormula().getValue(), this);
-            setObservableContent(States.VALUE);
+            cellValue = CommandHelper.updateValueOfCell(this);
         } catch (ExpressionParser.ExpressionFormatException e) {
             e.printStackTrace();
+        } finally {
+            setObservableContent(States.VALUE);
         }
     }
 }

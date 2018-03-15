@@ -62,6 +62,18 @@ public class ExpressionParser {
         return patternMap.get(ElementDetection.DATE).matcher(s).matches();
     }
 
+    public static Pair<Integer, Integer> getPosOfCellId(String id) {
+        int i = 0;
+        for (; i < id.length(); i++) {
+            if (!Character.isAlphabetic(id.charAt(i)))
+                break;
+        }
+
+        int col = ColumnBuilder.toNumber(id.substring(0, i)) - 1;
+        int row = Integer.parseInt(id.substring(i));
+        return new Pair<>(row, col);
+    }
+
     public static Pair<String, List<CellContent>> replaceCellIdentificators(ObservableList<TableRowModel> model, String formula) throws ExpressionFormatException {
         List<CellContent> cellCollection = new ArrayList<>();
         StringBuilder sb = new StringBuilder(formula);
