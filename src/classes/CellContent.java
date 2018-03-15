@@ -18,8 +18,6 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
     private SimpleStringProperty contentDisplayed;
     private String id;
 
-    private Set<CellContent> subscribers;
-
     public enum States {
         FORMULA, VALUE
     }
@@ -37,7 +35,6 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         formula = new SimpleStringProperty("");
         contentDisplayed = new SimpleStringProperty("");
         setObservableContent(States.FORMULA);
-        subscribers = new HashSet<>();
     }
 
     public ObservableValue<String> getContentObservable() {
@@ -61,9 +58,6 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
 
     public void setFormula(String formula) {
         this.formula.setValue(formula);
-        recalculate();
-
-        notifySubscribers();
     }
 
     public ObservableValue<String> getFormula() {
@@ -87,18 +81,6 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
 
     public Date getCellValue() {
         return cellValue;
-    }
-
-    public void subscribe(CellContent c) {
-        subscribers.add(c);
-    }
-
-    private void notifySubscribers() {
-        subscribers.forEach(CellContent::recalculate);
-    }
-
-    public void clearSubscribersList() {
-        subscribers.clear();
     }
 
     private void recalculate() {

@@ -33,7 +33,6 @@ public class CommandHelper {
         }
 
         if (expression != null) {
-            pair.getValue().forEach(x -> x.subscribe(c));
             return expression.execute();
         } else
             return null;
