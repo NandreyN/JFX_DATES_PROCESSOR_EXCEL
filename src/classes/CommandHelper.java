@@ -8,6 +8,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.DepthFirstIterator;
 
 import java.text.ParseException;
@@ -41,7 +42,7 @@ public class CommandHelper {
 
     private static void notifySubscribersFor(CellContent c) {
         // bfs
-        DepthFirstIterator<String, DefaultEdge> dfi = new DepthFirstIterator<>(graph, c.toString());
+        BreadthFirstIterator<String, DefaultEdge> dfi = new BreadthFirstIterator<>(graph, c.toString());
         while (dfi.hasNext()) {
             String id = dfi.next();
             if (id.equals(c.getCellId()))
