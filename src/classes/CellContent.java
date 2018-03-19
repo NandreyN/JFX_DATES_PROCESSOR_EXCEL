@@ -53,6 +53,10 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         }
     }
 
+    public void setObservableContent(String content) {
+        contentDisplayed.setValue(content);
+    }
+
     private String getCellValueFormatted() {
         return (cellValue != null) ? ExpressionParser.sdf.format(cellValue) : "";
     }

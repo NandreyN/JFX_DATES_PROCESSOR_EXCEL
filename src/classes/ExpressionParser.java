@@ -43,7 +43,7 @@ public class ExpressionParser {
     private static final String BINARY_OP_REGEX = "(^=(" + DATE_REGEX_STRING + ")([+-])(" + NUMBER_REGEX + ")$)" + "|" +
             "(^=(" + NUMBER_REGEX + ")[+-](" + DATE_REGEX_STRING + ")$)";
 
-    private static final String MULTIPLE_OP_REGEX = "^\\=(min|max)\\([,0-9.]+\\)$";
+    private static final String MULTIPLE_OP_REGEX = "^\\=(min|max)\\((" + DATE_REGEX_STRING + "[,]?)*\\)$";
     private static final String SINGLE_VALUE_REGEX = "^=" + DATE_REGEX_STRING + "$";
 
     // =v1OPv2
@@ -142,16 +142,18 @@ public class ExpressionParser {
                 }
                 expression = new BinaryExpression(date, days, (op.equals("+")) ? Operations.ADD : Operations.SUBTRACT);
             } catch (ParseException e) {
-               throw e;
+                throw e;
             }
         } else {
             matcher = patternMap.get(ElementDetection.MULTIPLE_OPERATION).matcher(s);
             if (!matcher.matches())
-                throw new ExpressionFormatException("Unknown operation");
+                throw new ExpressionFormatException("Unknown operation or invalid date format. Use mm.dd.yyyy");
 
             matcher = Pattern.compile("min").matcher(s);
             Operations op = (matcher.find()) ? Operations.MIN : Operations.MAX;
             List<String> paramArray = new ArrayList<>(10);
+
+
             matcher = Pattern.compile(DATE_REGEX_STRING).matcher(s);
             while (matcher.find())
                 paramArray.add(matcher.group());

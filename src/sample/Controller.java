@@ -34,8 +34,8 @@ public class Controller {
         }
     }
 
-    private static final int WIDTH = 10;
-    private static final int HEIGHT = 15;
+    private static final int WIDTH = 3;
+    private static final int HEIGHT = 3;
 
     @FXML
     private TableView<TableRowModel> tableView;

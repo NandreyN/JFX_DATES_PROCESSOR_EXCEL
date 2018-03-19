@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Cell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -70,28 +71,36 @@ public class ColumnBuilder {
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
 
             try {
-                Pair<Date, List<CellContent>> newPair = CommandHelper.processFormula(x.getNewValue(), c);
+                Pair<Date, List<CellContent>> oldPair = null;
+                if (!x.getOldValue().equals(""))
+                    oldPair = CommandHelper.processFormula(x.getOldValue());
+                Pair<Date, List<CellContent>> newPair = CommandHelper.processFormula(x.getNewValue());
+
                 if (newPair == null) {
                     throw new ExpressionParser.ExpressionFormatException("Got empty date");
                 }
                 c.setCellValue(newPair.getKey());
                 c.setObservableContent(CellContent.States.VALUE);
+                if (oldPair != null && oldPair.getValue().size() > 0)
+                    CommandHelper.unregisterDependencies(c, oldPair.getValue());
                 CommandHelper.refreshDependentCells(c, newPair.getValue());
+                c.setFormula(x.getNewValue());
 
             } catch (ExpressionParser.ExpressionFormatException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
-                c.setObservableContent(CellContent.States.VALUE);
+                c.setObservableContent("Error");
+                c.setCellValue(null);
+                CommandHelper.notifySubscribersErrorFor(c);
             } catch (CommandHelper.CycleReferenceException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setFormula(x.getOldValue());
-                c.setObservableContent(CellContent.States.FORMULA);
+                c.setCellValue(null);
+                c.setObservableContent("Error");
+                CommandHelper.notifySubscribersErrorFor(c);
             }
-            c.setFormula(x.getNewValue());
-            c.setObservableContent(CellContent.States.VALUE);
         });
 
         column.setOnEditCancel(x -> {
-
             int col = x.getTablePosition().getColumn();
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
             c.setObservableContent(CellContent.States.VALUE);
