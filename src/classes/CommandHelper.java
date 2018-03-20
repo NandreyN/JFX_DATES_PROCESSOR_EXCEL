@@ -98,8 +98,11 @@ public class CommandHelper {
                 continue;
             Pair<Integer, Integer> pos = ExpressionParser.getPosOfCellId(id);
             CellContent target = tableView.getItems().get(pos.getKey()).getContent(pos.getValue());
-            target.setObservableContent("Error");
+
+            //target.setCellValue(null);
             target.setErrorDetected(true);
+            target.setObservableContent("Error");
+
         }
     }
 

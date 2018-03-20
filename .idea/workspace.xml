@@ -3,11 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/out/production/DatesProcessorExcel/classes/CellContent.class" afterPath="$PROJECT_DIR$/out/production/DatesProcessorExcel/classes/CellContent.class" />
+      <change beforePath="$PROJECT_DIR$/out/production/DatesProcessorExcel/classes/ColumnBuilder.class" afterPath="$PROJECT_DIR$/out/production/DatesProcessorExcel/classes/ColumnBuilder.class" />
+      <change beforePath="$PROJECT_DIR$/out/production/DatesProcessorExcel/classes/CommandHelper.class" afterPath="$PROJECT_DIR$/out/production/DatesProcessorExcel/classes/CommandHelper.class" />
       <change beforePath="$PROJECT_DIR$/src/classes/CellContent.java" afterPath="$PROJECT_DIR$/src/classes/CellContent.java" />
       <change beforePath="$PROJECT_DIR$/src/classes/ColumnBuilder.java" afterPath="$PROJECT_DIR$/src/classes/ColumnBuilder.java" />
       <change beforePath="$PROJECT_DIR$/src/classes/CommandHelper.java" afterPath="$PROJECT_DIR$/src/classes/CommandHelper.java" />
-      <change beforePath="$PROJECT_DIR$/src/classes/ExpressionParser.java" afterPath="$PROJECT_DIR$/src/classes/ExpressionParser.java" />
-      <change beforePath="$PROJECT_DIR$/src/sample/Controller.java" afterPath="$PROJECT_DIR$/src/sample/Controller.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -68,16 +69,16 @@
       <file leaf-file-name="ColumnBuilder.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/classes/ColumnBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="105" column="0" lean-forward="true" selection-start-line="105" selection-start-column="0" selection-end-line="105" selection-end-column="0" />
+            <state relative-caret-position="606">
+              <caret line="103" column="16" lean-forward="false" selection-start-line="103" selection-start-column="16" selection-end-line="103" selection-end-column="16" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#toNumber#0;class#ColumnBuilder#0" expanded="false" />
                 <element signature="method#toName#0;class#ColumnBuilder#0" expanded="false" />
-                <element signature="e#6102#6103#0" expanded="true" />
-                <element signature="e#6130#6131#0" expanded="true" />
-                <element signature="e#6160#6161#0" expanded="true" />
-                <element signature="e#6189#6190#0" expanded="true" />
+                <element signature="e#5817#5818#0" expanded="true" />
+                <element signature="e#5845#5846#0" expanded="true" />
+                <element signature="e#5875#5876#0" expanded="true" />
+                <element signature="e#5904#5905#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -138,8 +139,8 @@
       <file leaf-file-name="CellContent.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/classes/CellContent.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
-              <caret line="135" column="0" lean-forward="false" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
+            <state relative-caret-position="147">
+              <caret line="128" column="21" lean-forward="false" selection-start-line="128" selection-start-column="12" selection-end-line="128" selection-end-column="21" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#798#799#0" expanded="true" />
@@ -180,8 +181,8 @@
       <file leaf-file-name="CommandHelper.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/classes/CommandHelper.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2">
-              <caret line="170" column="0" lean-forward="true" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+            <state relative-caret-position="155">
+              <caret line="101" column="14" lean-forward="false" selection-start-line="101" selection-start-column="14" selection-end-line="101" selection-end-column="14" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1059#1060#0" expanded="true" />
@@ -268,8 +269,8 @@
         <option value="$PROJECT_DIR$/src/classes/AlertManager.java" />
         <option value="$PROJECT_DIR$/src/sample/Controller.java" />
         <option value="$PROJECT_DIR$/src/classes/ExpressionParser.java" />
-        <option value="$PROJECT_DIR$/src/classes/CommandHelper.java" />
         <option value="$PROJECT_DIR$/src/classes/CellContent.java" />
+        <option value="$PROJECT_DIR$/src/classes/CommandHelper.java" />
         <option value="$PROJECT_DIR$/src/classes/ColumnBuilder.java" />
       </list>
     </option>
@@ -571,19 +572,13 @@
           <option name="timeStamp" value="94" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/classes/ColumnBuilder.java</url>
-          <line>75</line>
-          <properties />
-          <option name="timeStamp" value="101" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/classes/CellContent.java</url>
           <line>129</line>
           <properties />
           <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="103" />
+      <option name="time" value="104" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -724,10 +719,10 @@
             <element signature="imports" expanded="true" />
             <element signature="method#toNumber#0;class#ColumnBuilder#0" expanded="false" />
             <element signature="method#toName#0;class#ColumnBuilder#0" expanded="false" />
-            <element signature="e#6102#6103#0" expanded="true" />
-            <element signature="e#6130#6131#0" expanded="true" />
-            <element signature="e#6160#6161#0" expanded="true" />
-            <element signature="e#6189#6190#0" expanded="true" />
+            <element signature="e#5817#5818#0" expanded="true" />
+            <element signature="e#5845#5846#0" expanded="true" />
+            <element signature="e#5875#5876#0" expanded="true" />
+            <element signature="e#5904#5905#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -866,10 +861,10 @@
             <element signature="imports" expanded="true" />
             <element signature="method#toNumber#0;class#ColumnBuilder#0" expanded="false" />
             <element signature="method#toName#0;class#ColumnBuilder#0" expanded="false" />
-            <element signature="e#6102#6103#0" expanded="true" />
-            <element signature="e#6130#6131#0" expanded="true" />
-            <element signature="e#6160#6161#0" expanded="true" />
-            <element signature="e#6189#6190#0" expanded="true" />
+            <element signature="e#5817#5818#0" expanded="true" />
+            <element signature="e#5845#5846#0" expanded="true" />
+            <element signature="e#5875#5876#0" expanded="true" />
+            <element signature="e#5904#5905#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1208,8 +1203,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/classes/CellContent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="135" column="0" lean-forward="false" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
+        <state relative-caret-position="147">
+          <caret line="128" column="21" lean-forward="false" selection-start-line="128" selection-start-column="12" selection-end-line="128" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#798#799#0" expanded="true" />
@@ -1248,8 +1243,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/classes/CommandHelper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2">
-          <caret line="170" column="0" lean-forward="true" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+        <state relative-caret-position="155">
+          <caret line="101" column="14" lean-forward="false" selection-start-line="101" selection-start-column="14" selection-end-line="101" selection-end-column="14" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1059#1060#0" expanded="true" />
@@ -1260,16 +1255,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/classes/ColumnBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="105" column="0" lean-forward="true" selection-start-line="105" selection-start-column="0" selection-end-line="105" selection-end-column="0" />
+        <state relative-caret-position="606">
+          <caret line="103" column="16" lean-forward="false" selection-start-line="103" selection-start-column="16" selection-end-line="103" selection-end-column="16" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#toNumber#0;class#ColumnBuilder#0" expanded="false" />
             <element signature="method#toName#0;class#ColumnBuilder#0" expanded="false" />
-            <element signature="e#6102#6103#0" expanded="true" />
-            <element signature="e#6130#6131#0" expanded="true" />
-            <element signature="e#6160#6161#0" expanded="true" />
-            <element signature="e#6189#6190#0" expanded="true" />
+            <element signature="e#5817#5818#0" expanded="true" />
+            <element signature="e#5845#5846#0" expanded="true" />
+            <element signature="e#5875#5876#0" expanded="true" />
+            <element signature="e#5904#5905#0" expanded="true" />
           </folding>
         </state>
       </provider>

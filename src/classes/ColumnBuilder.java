@@ -73,59 +73,57 @@ public class ColumnBuilder {
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
 
             try {
-                Pair<Date, List<CellContent>> oldPair = null;
-                if (!c.getPreviousFormula().equals(""))
-                    oldPair = CommandHelper.processFormula(c.getPreviousFormula());
+                Pair<Date, List<CellContent>> old = CommandHelper.processFormula(c.getPreviousFormula());
+                Pair<Date, List<CellContent>> newV = CommandHelper.processFormula(x.getNewValue());
 
-                Pair<Date, List<CellContent>> newPair = CommandHelper.processFormula(x.getNewValue());
+                if (old != null && old.getValue().size() > 0)
+                    CommandHelper.unregisterDependencies(c, old.getValue());
 
-                if (newPair == null) {
+                if (x.getNewValue().equals("")) {
                     c.setCellValue(null);
-                    //throw new ExpressionParser.ExpressionFormatException("Got empty date");
-                    if (oldPair != null && oldPair.getValue().size() > 0) {
-                        CommandHelper.unregisterDependencies(c, oldPair.getValue());
-                    }
-                    CommandHelper.notifySubscribersErrorFor(c);
-
-                    c.setObservableContent(CellContent.States.VALUE);
                     c.setFormula("");
                     c.setPreviousFormula("");
+                    CommandHelper.notifySubscribersErrorFor(c);
+                    c.setObservableContent(CellContent.States.VALUE);
+                    c.setErrorDetected(false);
                     return;
                 }
 
-                c.setCellValue(newPair.getKey());
-                if (oldPair != null && oldPair.getValue().size() > 0)
-                    CommandHelper.unregisterDependencies(c, oldPair.getValue());
+                if (newV == null)
+                    throw new ExpressionParser.ExpressionFormatException("");
 
-                CommandHelper.refreshDependentCells(c, newPair.getValue());
-                //c.setCellValue(newPair.getKey());
-                for (CellContent cell : newPair.getValue())
-                    if (cell.isErrorDetected()) {
-                        throw new ExpressionParser.ExpressionFormatException("");
-                    }
-
-                c.setObservableContent(CellContent.States.VALUE);
                 c.setFormula(x.getNewValue());
-                c.setPreviousFormula(c.getFormula().getValue());
+                c.setPreviousFormula(x.getNewValue());
+                c.setCellValue(newV.getKey());
+                CommandHelper.refreshDependentCells(c, newV.getValue());
+
+                for (CellContent dep : newV.getValue())
+                    if (dep.isErrorDetected())
+                        throw new ExpressionParser.ExpressionFormatException("");
+
+                
+                c.setObservableContent(CellContent.States.VALUE);
                 c.setErrorDetected(false);
 
             } catch (ExpressionParser.ExpressionFormatException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setObservableContent("Error");
-                c.setCellValue(null);
+                //c.setCellValue(null);
                 c.setErrorDetected(true);
                 CommandHelper.notifySubscribersErrorFor(c);
             } catch (CommandHelper.CycleReferenceException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setFormula(x.getOldValue());
-                c.setCellValue(null);
+                //c.setCellValue(null);
                 c.setErrorDetected(true);
                 c.setObservableContent("Error");
                 CommandHelper.notifySubscribersErrorFor(c);
             }
         });
 
-        column.setOnEditCancel(x -> {
+        column.setOnEditCancel(x ->
+
+        {
             if (x == null)
                 return;
             int col = x.getTablePosition().getColumn();

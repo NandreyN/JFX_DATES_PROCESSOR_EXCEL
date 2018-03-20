@@ -128,6 +128,8 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         try {
             cellValue = CommandHelper.updateValueOfCell(this);
             errorDetected = cellValue == null;
+            if (errorDetected)
+                throw new ExpressionParser.ExpressionFormatException("Empty ref cell");
         } catch (ExpressionParser.ExpressionFormatException e) {
             AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
         } finally {
