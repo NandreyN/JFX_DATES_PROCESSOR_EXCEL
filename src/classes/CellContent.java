@@ -15,9 +15,30 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
     private static final int ALPHABET_SIZE = 26;
     private static final char[] alphabet = new char[ALPHABET_SIZE];
     private Date cellValue;
-    private SimpleStringProperty formula;
+    private SimpleStringProperty formula, previousFormula;
     private SimpleStringProperty contentDisplayed;
     private String id;
+    private boolean errorDetected;
+
+    public String getPreviousFormula() {
+        return previousFormula.get();
+    }
+
+    public SimpleStringProperty previousFormulaProperty() {
+        return previousFormula;
+    }
+
+    public void setPreviousFormula(String previousFormula) {
+        this.previousFormula.set(previousFormula);
+    }
+
+    public boolean isErrorDetected() {
+        return errorDetected;
+    }
+
+    public void setErrorDetected(boolean errorDetected) {
+        this.errorDetected = errorDetected;
+    }
 
     public enum States {
         FORMULA, VALUE
@@ -34,7 +55,9 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         super.setEditable(true);
         this.id = id;
         formula = new SimpleStringProperty("");
+        previousFormula = new SimpleStringProperty("");
         contentDisplayed = new SimpleStringProperty("");
+        errorDetected = false;
         setObservableContent(States.FORMULA);
     }
 
@@ -104,6 +127,7 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
     public void update() {
         try {
             cellValue = CommandHelper.updateValueOfCell(this);
+            errorDetected = cellValue == null;
         } catch (ExpressionParser.ExpressionFormatException e) {
             AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
         } finally {

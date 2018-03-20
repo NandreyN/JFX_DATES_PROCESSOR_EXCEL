@@ -54,7 +54,7 @@ public class CommandHelper {
     private static void visualize() {
         graphFrame = new JFrame();
         graphFrame.add(visualizationGraph);
-        graphFrame.setPreferredSize(new Dimension(300, 300));
+        graphFrame.setBounds(0, 0, 300, 300);
         graphFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         graphFrame.setVisible(true);
 
@@ -99,6 +99,7 @@ public class CommandHelper {
             Pair<Integer, Integer> pos = ExpressionParser.getPosOfCellId(id);
             CellContent target = tableView.getItems().get(pos.getKey()).getContent(pos.getValue());
             target.setObservableContent("Error");
+            target.setErrorDetected(true);
         }
     }
 

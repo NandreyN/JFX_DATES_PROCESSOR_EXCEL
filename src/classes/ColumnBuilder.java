@@ -59,6 +59,8 @@ public class ColumnBuilder {
         column.setResizable(true);
 
         column.setOnEditStart(x -> {
+            if (x == null)
+                return;
             int col = x.getTablePosition().getColumn();
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
             c.setObservableContent(CellContent.States.FORMULA);
@@ -72,35 +74,60 @@ public class ColumnBuilder {
 
             try {
                 Pair<Date, List<CellContent>> oldPair = null;
-                if (!x.getOldValue().equals(""))
-                    oldPair = CommandHelper.processFormula(x.getOldValue());
+                if (!c.getPreviousFormula().equals(""))
+                    oldPair = CommandHelper.processFormula(c.getPreviousFormula());
+
                 Pair<Date, List<CellContent>> newPair = CommandHelper.processFormula(x.getNewValue());
 
                 if (newPair == null) {
-                    throw new ExpressionParser.ExpressionFormatException("Got empty date");
+                    c.setCellValue(null);
+                    //throw new ExpressionParser.ExpressionFormatException("Got empty date");
+                    if (oldPair != null && oldPair.getValue().size() > 0) {
+                        CommandHelper.unregisterDependencies(c, oldPair.getValue());
+                    }
+                    CommandHelper.notifySubscribersErrorFor(c);
+
+                    c.setObservableContent(CellContent.States.VALUE);
+                    c.setFormula("");
+                    c.setPreviousFormula("");
+                    return;
                 }
+
                 c.setCellValue(newPair.getKey());
-                c.setObservableContent(CellContent.States.VALUE);
                 if (oldPair != null && oldPair.getValue().size() > 0)
                     CommandHelper.unregisterDependencies(c, oldPair.getValue());
+
                 CommandHelper.refreshDependentCells(c, newPair.getValue());
+                //c.setCellValue(newPair.getKey());
+                for (CellContent cell : newPair.getValue())
+                    if (cell.isErrorDetected()) {
+                        throw new ExpressionParser.ExpressionFormatException("");
+                    }
+
+                c.setObservableContent(CellContent.States.VALUE);
                 c.setFormula(x.getNewValue());
+                c.setPreviousFormula(c.getFormula().getValue());
+                c.setErrorDetected(false);
 
             } catch (ExpressionParser.ExpressionFormatException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setObservableContent("Error");
                 c.setCellValue(null);
+                c.setErrorDetected(true);
                 CommandHelper.notifySubscribersErrorFor(c);
             } catch (CommandHelper.CycleReferenceException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
                 c.setFormula(x.getOldValue());
                 c.setCellValue(null);
+                c.setErrorDetected(true);
                 c.setObservableContent("Error");
                 CommandHelper.notifySubscribersErrorFor(c);
             }
         });
 
         column.setOnEditCancel(x -> {
+            if (x == null)
+                return;
             int col = x.getTablePosition().getColumn();
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
             c.setObservableContent(CellContent.States.VALUE);

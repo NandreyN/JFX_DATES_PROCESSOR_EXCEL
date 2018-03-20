@@ -3,6 +3,7 @@ package classes;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.util.Pair;
+import sample.Controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,6 +91,9 @@ public class ExpressionParser {
 
             int col = ColumnBuilder.toNumber(id.substring(0, i)) - 1;
             int row = Integer.parseInt(id.substring(i));
+
+            if (col >= Controller.WIDTH || row >= Controller.HEIGHT)
+                throw new ExpressionFormatException("No referenced cell exists");
 
             CellContent c = model.get(row).getContent(col);
             cellCollection.add(c);
