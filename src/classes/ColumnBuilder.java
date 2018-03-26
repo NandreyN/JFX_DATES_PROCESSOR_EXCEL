@@ -1,6 +1,8 @@
 package classes;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -16,11 +18,14 @@ import java.util.List;
 public class ColumnBuilder {
     private int height, width;
     private TableView<TableRowModel> table;
+    private CommandHelper helper;
+    private CellContent saved;
 
-    public ColumnBuilder(int h, int w, TableView<TableRowModel> table) {
+    public ColumnBuilder(int h, int w, TableView<TableRowModel> table, CommandHelper helper) {
         this.height = h;
         this.width = w;
         this.table = table;
+        this.helper = helper;
     }
 
     private TableColumn<TableRowModel, String> getIndexColumn() {
@@ -61,9 +66,10 @@ public class ColumnBuilder {
         column.setOnEditStart(x -> {
             if (x == null)
                 return;
-            int col = x.getTablePosition().getColumn();
+            int col = Integer.parseInt(column.getId());
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
             c.setObservableContent(CellContent.States.FORMULA);
+            saved = c;
         });
 
         column.setOnEditCommit(x -> {
@@ -73,17 +79,17 @@ public class ColumnBuilder {
             CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
 
             try {
-                Pair<Date, List<CellContent>> old = CommandHelper.processFormula(c.getPreviousFormula());
-                Pair<Date, List<CellContent>> newV = CommandHelper.processFormula(x.getNewValue());
+                Pair<Date, List<CellContent>> old = helper.processFormula(c.getPreviousFormula());
+                Pair<Date, List<CellContent>> newV = helper.processFormula(x.getNewValue());
 
                 if (old != null && old.getValue().size() > 0)
-                    CommandHelper.unregisterDependencies(c, old.getValue());
+                    helper.unregisterDependencies(c, old.getValue());
 
                 if (x.getNewValue().equals("")) {
                     c.setCellValue(null);
                     c.setFormula("");
                     c.setPreviousFormula("");
-                    CommandHelper.notifySubscribersErrorFor(c);
+                    helper.notifySubscribersErrorFor(c);
                     c.setObservableContent(CellContent.States.VALUE);
                     c.setErrorDetected(false);
                     return;
@@ -95,40 +101,39 @@ public class ColumnBuilder {
                 c.setFormula(x.getNewValue());
                 c.setPreviousFormula(x.getNewValue());
                 c.setCellValue(newV.getKey());
-                CommandHelper.refreshDependentCells(c, newV.getValue());
+                helper.refreshDependentCells(c, newV.getValue());
 
                 for (CellContent dep : newV.getValue())
                     if (dep.isErrorDetected())
                         throw new ExpressionParser.ExpressionFormatException("");
 
-                
+
                 c.setObservableContent(CellContent.States.VALUE);
                 c.setErrorDetected(false);
 
             } catch (ExpressionParser.ExpressionFormatException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
+                c.setObservableContent(CellContent.States.VALUE);
                 c.setObservableContent("Error");
                 //c.setCellValue(null);
                 c.setErrorDetected(true);
-                CommandHelper.notifySubscribersErrorFor(c);
+                helper.notifySubscribersErrorFor(c);
             } catch (CommandHelper.CycleReferenceException e) {
                 AlertManager.showAlertAndWait("Error", e.getMessage(), Alert.AlertType.ERROR);
+                c.setObservableContent(CellContent.States.VALUE);
                 c.setFormula(x.getOldValue());
                 //c.setCellValue(null);
                 c.setErrorDetected(true);
                 c.setObservableContent("Error");
-                CommandHelper.notifySubscribersErrorFor(c);
+                helper.notifySubscribersErrorFor(c);
             }
         });
 
         column.setOnEditCancel(x ->
-
         {
             if (x == null)
                 return;
-            int col = x.getTablePosition().getColumn();
-            CellContent c = table.getSelectionModel().getSelectedItem().getContent(col);
-            c.setObservableContent(CellContent.States.VALUE);
+            saved.setObservableContent(CellContent.States.VALUE);
         });
     }
 

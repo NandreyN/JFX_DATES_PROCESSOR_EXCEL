@@ -43,16 +43,18 @@ public class Controller {
     private TableView<RowNumberValue> rowIdTableView;
 
     private ColumnBuilder builder;
+    private CommandHelper helper;
 
     public Controller() {
     }
 
     @FXML
     private void initialize() {
+        helper = new CommandHelper();
         configureRowIdTableView();
         configureTableData();
         try {
-            CommandHelper.setTableView(tableView);
+            helper.setTableView(tableView);
         } catch (ExpressionParser.ExpressionFormatException e) {
             e.printStackTrace();
         }
@@ -72,7 +74,7 @@ public class Controller {
     }
 
     private void configureTableData() {
-        builder = new ColumnBuilder(HEIGHT, WIDTH, tableView);
+        builder = new ColumnBuilder(HEIGHT, WIDTH, tableView, helper);
         ObservableList<TableColumn<TableRowModel, String>> columns = builder.getEmptyTableColumns();
         tableView.getColumns().clear();
         tableView.getColumns().addAll(columns);

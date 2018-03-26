@@ -2,22 +2,17 @@ package classes;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Cell;
 import javafx.scene.control.TableView;
 import javafx.util.Pair;
-import jdk.jshell.spi.ExecutionControl;
 import org.jgraph.JGraph;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
-import org.jgrapht.traverse.DepthFirstIterator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,13 +31,13 @@ public class CommandHelper {
     }
 
     @FXML
-    private static TableView<TableRowModel> tableView;
-    private static ListenableGraph<String, DefaultEdge> graph;
-    private static JGraph visualizationGraph;
-    private static JFrame graphFrame;
-    private static JGraphModelAdapter m_jgAdapter;
+    private TableView<TableRowModel> tableView;
+    private ListenableGraph<String, DefaultEdge> graph;
+    private JGraph visualizationGraph;
+    private JFrame graphFrame;
+    private JGraphModelAdapter m_jgAdapter;
 
-    public static void setTableView(TableView<TableRowModel> table) throws ExpressionParser.ExpressionFormatException {
+    public void setTableView(TableView<TableRowModel> table) throws ExpressionParser.ExpressionFormatException {
         tableView = table;
         assertTableInitialized();
         rebuildGraph();
@@ -51,7 +46,7 @@ public class CommandHelper {
         visualize();
     }
 
-    private static void visualize() {
+    private void visualize() {
         graphFrame = new JFrame();
         graphFrame.add(visualizationGraph);
         graphFrame.setBounds(0, 0, 300, 300);
@@ -69,7 +64,7 @@ public class CommandHelper {
         positionVertexAt("C2", 200, 200);
     }
 
-    private static void positionVertexAt(Object vertex, int x, int y) {
+    private void positionVertexAt(Object vertex, int x, int y) {
         DefaultGraphCell cell = m_jgAdapter.getVertexCell(vertex);
         Map attr = cell.getAttributes();
         Rectangle2D b = GraphConstants.getBounds(attr);
@@ -81,7 +76,7 @@ public class CommandHelper {
         m_jgAdapter.edit(cellAttr, null, null, null);
     }
 
-    private static void rebuildGraph() {
+    private void rebuildGraph() {
         graph = new ListenableDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 
         tableView.getItems().forEach(row -> {
@@ -90,7 +85,7 @@ public class CommandHelper {
         });
     }
 
-    public static void notifySubscribersErrorFor(CellContent c) {
+    public void notifySubscribersErrorFor(CellContent c) {
         BreadthFirstIterator<String, DefaultEdge> dfi = new BreadthFirstIterator<>(graph, c.toString());
         while (dfi.hasNext()) {
             String id = dfi.next();
@@ -106,7 +101,7 @@ public class CommandHelper {
         }
     }
 
-    private static void notifySubscribersFor(CellContent c) {
+    private void notifySubscribersFor(CellContent c) {
         // bfs
         BreadthFirstIterator<String, DefaultEdge> dfi = new BreadthFirstIterator<>(graph, c.toString());
         while (dfi.hasNext()) {
@@ -115,11 +110,11 @@ public class CommandHelper {
                 continue;
             Pair<Integer, Integer> pos = ExpressionParser.getPosOfCellId(id);
             CellContent target = tableView.getItems().get(pos.getKey()).getContent(pos.getValue());
-            target.update();
+            target.update(this);
         }
     }
 
-    public static void registerDependencies(CellContent forCell, List<CellContent> dep) {
+    public void registerDependencies(CellContent forCell, List<CellContent> dep) {
         // x->y means y uses x in it`s formula
         dep.forEach(x -> {
             if (!graph.containsEdge(x.toString(), forCell.toString()))
@@ -127,24 +122,24 @@ public class CommandHelper {
         });
     }
 
-    public static void unregisterDependencies(CellContent forCell, List<CellContent> dep) {
+    public void unregisterDependencies(CellContent forCell, List<CellContent> dep) {
         dep.forEach(x -> {
             if (graph.containsEdge(x.toString(), forCell.toString()))
                 graph.removeEdge(x.toString(), forCell.toString());
         });
     }
 
-    private static boolean checkCycles() {
+    private boolean checkCycles() {
         CycleDetector<String, DefaultEdge> detector = new CycleDetector<>(graph);
         return detector.detectCycles();
     }
 
-    private static void assertTableInitialized() throws ExpressionParser.ExpressionFormatException {
+    private void assertTableInitialized() throws ExpressionParser.ExpressionFormatException {
         if (tableView == null)
             throw new ExpressionParser.ExpressionFormatException("Table was not initialized");
     }
 
-    public static Date updateValueOfCell(CellContent c) throws ExpressionParser.ExpressionFormatException {
+    public Date updateValueOfCell(CellContent c) throws ExpressionParser.ExpressionFormatException {
         Pair<String, List<CellContent>> pair = ExpressionParser.replaceCellIdentificators(tableView.getItems(), c.getFormula().getValue());
         String formula = pair.getKey();
         Expression expression = null;
@@ -158,7 +153,7 @@ public class CommandHelper {
         return (expression != null) ? expression.execute() : null;
     }
 
-    public static Pair<Date, List<CellContent>> processFormula(String formula) throws ExpressionParser.ExpressionFormatException, CycleReferenceException {
+    public Pair<Date, List<CellContent>> processFormula(String formula) throws ExpressionParser.ExpressionFormatException, CycleReferenceException {
         assertTableInitialized();
 
         Pair<String, List<CellContent>> pair = ExpressionParser.replaceCellIdentificators(tableView.getItems(), formula);
@@ -178,7 +173,7 @@ public class CommandHelper {
             return null;
     }
 
-    public static void refreshDependentCells(CellContent c, List<CellContent> dep) throws CycleReferenceException {
+    public void refreshDependentCells(CellContent c, List<CellContent> dep) throws CycleReferenceException {
         registerDependencies(c, dep);
         if (checkCycles()) {
             unregisterDependencies(c, dep);

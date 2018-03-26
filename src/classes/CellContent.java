@@ -61,6 +61,7 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         setObservableContent(States.FORMULA);
     }
 
+
     public ObservableValue<String> getContentObservable() {
         return contentDisplayed;
     }
@@ -75,6 +76,7 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
                 break;
         }
     }
+
 
     public void setObservableContent(String content) {
         contentDisplayed.setValue(content);
@@ -124,9 +126,9 @@ public class CellContent extends javafx.scene.control.TableCell<TableRowModel, S
         return cellValue;
     }
 
-    public void update() {
+    public void update(CommandHelper helper) {
         try {
-            cellValue = CommandHelper.updateValueOfCell(this);
+            cellValue = helper.updateValueOfCell(this);
             errorDetected = cellValue == null;
             if (errorDetected)
                 throw new ExpressionParser.ExpressionFormatException("Empty ref cell");
